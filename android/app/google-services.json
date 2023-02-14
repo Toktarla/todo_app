@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1084577279972",
+    "project_id": "firefire-ceb25",
+    "storage_bucket": "firefire-ceb25.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1084577279972:android:b7ae42e7c54d51835761f1",
+        "android_client_info": {
+          "package_name": "com.example.firebasesetup"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1084577279972-lu97ntk8is9t8rpoac11599t89c2drbu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEAXBTJkqd66xec4PtLjzpraJ1INgGdfU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1084577279972-lu97ntk8is9t8rpoac11599t89c2drbu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
