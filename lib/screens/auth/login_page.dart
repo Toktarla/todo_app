@@ -1,11 +1,12 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebasesetup/mixins/focus_node_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../utils/globals.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends StatefulWidget with FocusNodeMixin {
   const LoginPage({super.key});
 
   @override
@@ -13,8 +14,15 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  // Focus Nodes
+  late FocusNode emailFocusNode;
+  late FocusNode passwordFocusNode;
+
+  // Text Controllers
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
+  // Validator
   final _formKey = GlobalKey<FormState>();
 
   void signInUser() async {
@@ -42,6 +50,19 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  @override
+  void initState() {
+    super.initState();
+    emailFocusNode = FocusNode();
+    passwordFocusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    emailFocusNode.dispose();
+    passwordFocusNode.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,11 +110,16 @@ class _LoginPageState extends State<LoginPage> {
                       child: TextFormField(
                         keyboardType: TextInputType.emailAddress,
                         controller: emailController,
+                        focusNode: emailFocusNode,
                         decoration: InputDecoration(
                           hintText: 'Email',
                           hintStyle: kanitStyle,
                           border: InputBorder.none,
                         ),
+                        onFieldSubmitted: (_){
+                          widget.fieldFocusChange(context, emailFocusNode, passwordFocusNode);
+
+                        },
                         validator: (email) {
                           if (email != null &&
                               !EmailValidator.validate(email)) {
@@ -123,6 +149,7 @@ class _LoginPageState extends State<LoginPage> {
                         keyboardType: TextInputType.visiblePassword,
                         obscureText: true,
                         controller: passwordController,
+                        focusNode: passwordFocusNode,
                         decoration: InputDecoration(
                           hintText: 'Password',
                           hintStyle: kanitStyle,

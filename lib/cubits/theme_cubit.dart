@@ -7,7 +7,7 @@ import '../utils/colors.dart';
 class ThemeCubit extends Cubit<ThemeData> {
   final SharedPreferences _prefs;
 
-  ThemeCubit(this._prefs) : super(_lightTheme);
+  ThemeCubit(this._prefs) : super(_darkTheme);
 
   ThemeData get theme {
     final isDarkMode = _prefs.getBool('isDarkMode') ?? false;

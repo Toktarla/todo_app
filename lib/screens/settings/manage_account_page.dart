@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../cubits/theme_cubit.dart';
 import '../../utils/globals.dart';
 
 
@@ -111,7 +113,18 @@ class ManageAccountPage extends StatelessWidget {
                 },
                 leading: const Icon(Icons.settings),
                 title: Text('Change credentials of user',style: kanitStyle,),
+              ),
+              ListTile(
+                onTap: (){
+                  context.read<ThemeCubit>().toggleTheme();
+                },
+                leading: context.read<ThemeCubit>().state.brightness == Brightness.light
+                    ? Icon(Icons.light_mode_rounded,color: Theme.of(context).iconTheme.color,)
+                    : Icon(Icons.dark_mode_rounded,color: Theme.of(context).iconTheme.color),
+                title: Text('Change theme',style: kanitStyle,),
+
               )
+
 
 
             ],

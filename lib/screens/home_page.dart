@@ -2,11 +2,15 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebasesetup/cubits/task_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../di.dart';
 import '../utils/globals.dart';
 
 class HomePage extends StatefulWidget {
@@ -36,7 +40,6 @@ class _HomePageState extends State<HomePage> {
 
   final messageController = TextEditingController();
   User? user = FirebaseAuth.instance.currentUser;
-
   PlatformFile? pickedFile;
   String? downloadUrl;
   UploadTask? uploadTask;
@@ -62,9 +65,9 @@ class _HomePageState extends State<HomePage> {
       uploadTask = null;
     });
   }
+  bool _defaultTaskListsCreated = false;
 
-  String imagePath =
-      'https://cdn1.iconfinder.com/data/icons/instagram-ui-colored/48/JD-18-512.png';
+  String imagePath = 'https://cdn1.iconfinder.com/data/icons/instagram-ui-colored/48/JD-18-512.png';
 
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();
@@ -72,7 +75,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   int taskCount = 0;
-
   List<Map<String, dynamic>> myListData = [
     {
       'title': 'My Day',
@@ -112,38 +114,6 @@ class _HomePageState extends State<HomePage> {
     },
   ];
 
-  List<Map<String, dynamic>> userList = [
-    {
-      'title': 'Toktar',
-      'trailing': 0,
-      'icon': Icons.list,
-      'color': Colors.blueAccent
-    },
-    {
-      'title': 'Task',
-      'trailing': 1,
-      'icon': Icons.list,
-      'color': Colors.blueAccent
-    },
-    {
-      'title': 'Toktar',
-      'trailing': 0,
-      'icon': Icons.list,
-      'color': Colors.blueAccent
-    },
-    {
-      'title': 'Toktar',
-      'trailing': 0,
-      'icon': Icons.list,
-      'color': Colors.blueAccent
-    },
-    {
-      'title': 'Toktar',
-      'trailing': 0,
-      'icon': Icons.list,
-      'color': Colors.blueAccent
-    },
-  ];
 
   Future<void> _createList() async {
     String newListTitle = '';
@@ -189,6 +159,26 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
+  }
+  Future<void> createDefaultTaskLists(String userId) async {
+    final userListsRef = FirebaseFirestore.instance.collection('users').doc(userId).collection('ready_lists');
+    for (var map in myListData) {
+      String listName = map['title'];
+      await userListsRef.doc(listName).set({
+        'listName': listName,
+        'listTasks': [],
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    bool isCreated = context.read<TaskCubit>().state;
+    if (!isCreated) {
+      createDefaultTaskLists(user!.uid);
+      context.read<TaskCubit>().changeDefaultTaskListsCreated();
+    }
   }
 
   @override
@@ -251,7 +241,9 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       StreamBuilder<QuerySnapshot>(
                         stream: FirebaseFirestore.instance
-                            .collection('tasks')
+                            .collection('users')
+                            .doc(user?.uid)
+                            .collection('ready_lists')
                             .snapshots(),
                         builder: (BuildContext context,
                             AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -263,9 +255,6 @@ class _HomePageState extends State<HomePage> {
                             return Center(
                                 child: Text('Error: ${snapshot.error}'));
                           } else {
-                            final int taskCount =
-                                snapshot.data?.docs.length ?? 0;
-
                             return ListView.builder(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
@@ -273,17 +262,14 @@ class _HomePageState extends State<HomePage> {
                               itemBuilder: (BuildContext context, int index) {
                                 final item = myListData[index];
                                 return ListTile(
-                                  leading:
-                                      Icon(item['icon'], color: item['color']),
+                                  leading: Icon(item['icon'], color: item['color']),
                                   title: Text(item['title']),
-                                  trailing: Text(index == 0 && taskCount != 0
-                                      ? taskCount.toString()
-                                      : ''),
                                   onTap: () {
                                     context.go('/myday', extra: {
                                       'title': item['title'],
                                       'todayDate': DateFormat('EEEE, MMMM d')
                                           .format(DateTime.now()),
+                                      'userUid' : user?.uid
                                     });
                                   },
                                 );

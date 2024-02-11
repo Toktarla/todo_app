@@ -111,14 +111,7 @@ class UserTaskList extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.delete, color: Colors.indigo),
                 onPressed: () {
-                  FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(FirebaseAuth.instance.currentUser!.uid)
-                      .collection('lists')
-                      .doc(taskId)
-                      .update({
-                    'listTasks': FieldValue.arrayRemove([task]),
-                  });
+                  _deleteTask(task);
                 },
               ),
             ],
@@ -160,15 +153,9 @@ class UserTaskList extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.delete, color: Colors.indigo),
                 onPressed: () {
-                  FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(FirebaseAuth.instance.currentUser!.uid)
-                      .collection('lists')
-                      .doc(taskId)
-                      .update({
-                    'listTasks': FieldValue.arrayRemove([task]),
-                  });
-                },
+                  _deleteTask(task);
+
+                }
               ),
             ],
           ),
@@ -285,7 +272,7 @@ class UserTaskList extends StatelessWidget {
         .collection('lists')
         .doc(taskId)
         .update({
-      'listTasks': FieldValue.arrayRemove([task]), // Remove the task
+      'listTasks': FieldValue.arrayRemove([task]),
     });
 
     task['completed'] = false;
@@ -295,7 +282,7 @@ class UserTaskList extends StatelessWidget {
         .collection('lists')
         .doc(taskId)
         .update({
-      'listTasks': FieldValue.arrayUnion([task]), // Add the updated task back
+      'listTasks': FieldValue.arrayUnion([task]),
     });
   }
 }

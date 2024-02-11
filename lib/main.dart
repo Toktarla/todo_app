@@ -13,7 +13,7 @@ import 'package:firebasesetup/screens/auth/verify_email_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
+import 'cubits/task_cubit.dart';
 import 'di.dart';
 
 
@@ -81,6 +81,7 @@ final goRouter = GoRouter(
           return MyDayPage(
             title: data['title'],
             todayDate: data['todayDate'],
+            userUid: data['userUid'],
           );
         }
     ),
@@ -120,6 +121,9 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<ThemeCubit>(
             create: (_) => sl()..loadTheme()
+        ),
+        BlocProvider<TaskCubit>(
+            create: (_) => sl()
         ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeData>(

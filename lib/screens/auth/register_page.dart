@@ -1,10 +1,11 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebasesetup/mixins/focus_node_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../utils/globals.dart';
 
-class RegisterPage extends StatefulWidget {
+class RegisterPage extends StatefulWidget with FocusNodeMixin {
   const RegisterPage({Key? key}) : super(key: key);
 
   @override
@@ -12,10 +13,14 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+
+  // Text Controllers
   final emailController = TextEditingController();
   final fullNameController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+
+  // Validator
   final _formKey = GlobalKey<FormState>();
 
   late FocusNode emailFocusNode;
@@ -39,12 +44,6 @@ class _RegisterPageState extends State<RegisterPage> {
     passwordFocusNode.dispose();
     confirmPasswordFocusNode.dispose();
     super.dispose();
-  }
-
-  void _fieldFocusChange(
-      BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
-    currentFocus.unfocus();
-    FocusScope.of(context).requestFocus(nextFocus);
   }
 
   void signUpUser() async {
@@ -136,7 +135,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         focusNode: emailFocusNode,
                         textInputAction: TextInputAction.next,
                         onFieldSubmitted: (_) {
-                          _fieldFocusChange(
+                          widget.fieldFocusChange(
                               context, emailFocusNode, fullNameFocusNode);
                         },
                         decoration: InputDecoration(
@@ -176,7 +175,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         focusNode: fullNameFocusNode,
                         textInputAction: TextInputAction.next,
                         onFieldSubmitted: (_) {
-                          _fieldFocusChange(
+                          widget.fieldFocusChange(
                               context, fullNameFocusNode, passwordFocusNode);
                         },
                         decoration: InputDecoration(
@@ -218,7 +217,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         focusNode: passwordFocusNode,
                         textInputAction: TextInputAction.next,
                         onFieldSubmitted: (_) {
-                          _fieldFocusChange(context, passwordFocusNode,
+                          widget.fieldFocusChange(context, passwordFocusNode,
                               confirmPasswordFocusNode);
                         },
                         obscureText: true,

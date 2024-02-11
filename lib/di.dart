@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:firebasesetup/cubits/task_cubit.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'cubits/theme_cubit.dart';
@@ -16,6 +17,8 @@ Future<void> initializeDependencies() async {
 
   // Cubits
   sl.registerFactory<ThemeCubit>(() => ThemeCubit(sl())
+  );
+  sl.registerFactory<TaskCubit>(() => TaskCubit()
   );
 
 }
